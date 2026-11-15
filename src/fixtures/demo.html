@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Playwright Todo Demo</title>
+  </head>
+  <body>
+    <h1>Todo demo</h1>
+    <form id="create">
+      <label for="title">Todo title</label>
+      <input id="title" required maxlength="200">
+      <button type="submit">Create todo</button>
+    </form>
+    <form id="find">
+      <label for="id">Todo ID</label>
+      <input id="id" required>
+      <button type="submit">Find todo</button>
+    </form>
+    <p role="status"></p>
+    <script>
+      const status = document.querySelector('[role="status"]');
+      async function showTodo(response) {
+        const data = await response.json();
+        status.textContent = response.ok ? data.title : data.error;
+        status.dataset.todoId = response.ok ? data.id : '';
+      }
+      document.querySelector('#create').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        try {
+          await showTodo(await fetch('/api/todos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: document.querySelector('#title').value }),
+          }));
+        } catch { status.textContent = 'Request failed'; }
+      });
+      document.querySelector('#find').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        try {
+          await showTodo(await fetch('/api/todos/' + encodeURIComponent(document.querySelector('#id').value)));
+        } catch { status.textContent = 'Request failed'; }
+      });
+    </script>
+  </body>
+</html>
