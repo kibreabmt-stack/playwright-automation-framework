@@ -1,0 +1,17 @@
+services:
+  tests:
+    build: .
+    init: true
+    ipc: host
+    environment:
+      CI: 'true'
+      TEST_ENV: ${TEST_ENV:-dev}
+      UI_BASE_URL: ${UI_BASE_URL:-}
+      API_BASE_URL: ${API_BASE_URL:-}
+      RUN_STRESS: ${RUN_STRESS:-0}
+      STRESS_REQUESTS: ${STRESS_REQUESTS:-40}
+      STRESS_CONCURRENCY: ${STRESS_CONCURRENCY:-4}
+      STRESS_MAX_P95_MS: ${STRESS_MAX_P95_MS:-2000}
+    volumes:
+      - ./playwright-report:/app/playwright-report
+      - ./test-results:/app/test-results
